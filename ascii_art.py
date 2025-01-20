@@ -9,13 +9,13 @@ def ascii_chars_separator(string):
 
     return arr_of_chars
 
-def ranged_int_to_char(ascii_chars, comparator, integers):
+def encoding_int_to_char(ascii_chars, comparator, integers):
     converted_integers = {}
 
     for i in range(len(comparator)):
     # for i in range(len(comparator) - 1):
         if i == len(comparator) - 1: # the last char will be iterated
-            for j in range(comparator[i-1], comparator[i]): # we have to use range from the second latest num to the latest num + 1 
+            for j in range(comparator[i-1], comparator[i] + 1): # we have to use range from the second latest num to the latest num + 1 
             # because stop won't be stepped
                 if integers[j] >= comparator[i-1] and integers[j] <= comparator[i]:
                     # converted_integers.append(ascii_chars[i])
@@ -27,6 +27,17 @@ def ranged_int_to_char(ascii_chars, comparator, integers):
                     converted_integers[j] = ascii_chars[i]
     
     return converted_integers
+
+def brightness_to_ascii(brightness, encoder, img_height, img_width):
+    ascii_image = []
+
+    for y in range(len(brightness)): # represents the y point iterator
+        for x in range(len(brightness[0])): # represents the x point iterator
+           for key in encoder:
+                if brightness[y][x] == key:
+                    ascii_image.append(encoder[key])
+
+    return ascii_image
 
 # Read the image 
 img = Image.open("ww.jpeg") # Initialize variable named "img" with Image class from PIL
@@ -60,11 +71,18 @@ for y in range(len(img_pixel_brightness)): # represents the y point iterator
 # 4. Convert brightness numbers to ASCII characters
 # BEGIN
 ascii_chars = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
-print(len(ascii_chars))
+# print(len(ascii_chars))
 comparator = np.linspace(0, 255, len(ascii_chars), dtype="int32")
 integers = np.linspace(0, 255, 256, dtype="int32")
+# print(comparator)
 
-print(ranged_int_to_char(ascii_chars, comparator, integers))
+encoder = encoding_int_to_char(ascii_chars, comparator, integers)
+
+ascii_image = brightness_to_ascii(img_pixel_brightness, encoder, img_height, img_width)
+# ascii_image = np.array(ascii_image).reshape(ascii_image, (img_height, img_width))
+ascii_image = np.array(ascii_image)
+ascii_image = np.reshape(ascii_image, (img_height, img_width))
+print(ascii_image.shape)
 
 # 5. Print the ASCII art
 
