@@ -47,14 +47,21 @@ def encoding_int_to_char(ascii_chars):
     
     return converted_integers
 
-def brightness_to_ascii(brightness, encoder):
+def brightness_to_ascii(brightness, encoder, multiply = 1):
     ascii_image = []
 
     for y in range(len(brightness)): # represents the y point iterator
         for x in range(len(brightness[0])): # represents the x point iterator
            for key in encoder:
                 if brightness[y][x] == key:
-                    ascii_image.append(encoder[key])
+                    if multiply > 1:
+                        char = encoder[key]
+                        new_char = ""
+                        for i in range(multiply):
+                            new_char = new_char + char
+                        ascii_image.append(new_char)
+                    else:
+                        ascii_image.append(encoder[key])
 
     ascii_image = np.array(ascii_image)
     ascii_image = np.reshape(ascii_image, (len(brightness), len(brightness[0])))
@@ -65,11 +72,26 @@ def display_ascii_image(ascii_image):
     for y in range(len(ascii_image)):
         for x in range(len(ascii_image[0])):
             print(ascii_image[y][x], end="")
-        print("\n")
+        print()
+
+def save_as_txt(filename, ascii_image):
+    try:
+        ascii_image_txt = open(filename, 'x') # Create
+        ascii_image_txt = open(filename, 'a')
+        for i in range(len(ascii_image)):
+            for j in range(len(ascii_image[0])):
+                ascii_image_txt.write(ascii_image[i][j])
+            ascii_image_txt.write("\n")
+
+        ascii_image_txt.close()
+    except:
+        print("The file with that name has been created. Please change the filename!")
 
 # 1. Read the image 
 # BEGIN
 img = Image.open("ww.jpeg") # Initialize variable named "img" with Image class from PIL
+# img = img.resize((img.width // 2, img.height // 2)) To resize the image
+
 # END
 
 # 2. Load your image’s pixel data into a 2-dimensional array
@@ -89,7 +111,7 @@ img_pixel_brightness = img_to_brightness_pixel(img)
 ascii_chars = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
 encoder = encoding_int_to_char(ascii_chars)
 
-ascii_image = brightness_to_ascii(img_pixel_brightness, encoder)
+ascii_image = brightness_to_ascii(img_pixel_brightness, encoder, 2)
 # END
 
 # 5. Print the ASCII art
@@ -97,6 +119,7 @@ ascii_image = brightness_to_ascii(img_pixel_brightness, encoder)
 display_ascii_image(ascii_image)
 # END
 
+# 6. Save the ASCII art as .txt file
+save_as_txt("ww.txt", ascii_image)
 
 
-img.show()
